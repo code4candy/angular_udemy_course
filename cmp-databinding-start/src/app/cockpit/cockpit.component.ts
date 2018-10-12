@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output, ViewChild, ElementRef } from '@angular/core';
 
 @Component({
   selector: 'app-cockpit',
@@ -7,27 +7,31 @@ import {Component, EventEmitter, OnInit} from '@angular/core';
 })
 export class CockpitComponent implements OnInit {
   // = $event / EventEmitter ermöglicht die Ausgabe eigener Events
-  serverCreated = new EventEmitter<{serverName: string, serverContent: string}>();
-  blueprintCreated = new EventEmitter<{serverName: string, serverContent: string}>();
-  newServerName = '';
-  newServerContent = '';
+  @Output() serverCreated = new EventEmitter<{serverName: string, serverContent: string}>();
+  @Output('bpCreated') blueprintCreated = new EventEmitter<{serverName: string, serverContent: string}>();
+  // newServerName = '';
+  // newServerContent = '';
+  @ViewChild('serverContentInput') serverContentInput: ElementRef; // instead of data-binding
 
   constructor() { }
 
   ngOnInit() {
   }
 
-  onAddServer() {
+  onAddServer(serverNameInput: HTMLInputElement) {
     // Objekt, dass als Event erzeugt werden soll
-    this.serverCreated.emit({serverName: this.newServerName, serverContent: this.newServerContent});
+    console.log(serverNameInput);
+    this.serverCreated.emit({
+      serverName: serverNameInput.value,
+      serverContent: this.serverContentInput.nativeElement.value // refers to an ElementReference
+    });
   }
 
-  onAddBlueprint() {
-    // this.serverElements.push({
-    //   type: 'blueprint',
-    //   name: this.newServerName,
-    //   content: this.newServerContent
-    // });
+  onAddBlueprint(serverNameInput) {
+    this.blueprintCreated.emit({
+      serverName: serverNameInput.value,
+      serverContent: this.serverContentInput.nativeElement.value
+    });
   }
 
 }
